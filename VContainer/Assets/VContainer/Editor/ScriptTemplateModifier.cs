@@ -34,9 +34,24 @@ namespace VContainer.Editor
 #endif
             "";
 
+        static bool IsScriptModifierDisabled()
+        {
+            var guids = AssetDatabase.FindAssets("t:VContainerSettings");
+            foreach (var guid in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var settings = AssetDatabase.LoadAssetAtPath<VContainerSettings>(path);
+                if (settings != null && settings.DisableScriptModifier)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static void OnWillCreateAsset(string metaPath)
         {
-            if (VContainerSettings.Instance != null && VContainerSettings.Instance.DisableScriptModifier)
+            if (IsScriptModifierDisabled())
             {
                 return;
             }
