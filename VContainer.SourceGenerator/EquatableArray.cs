@@ -10,14 +10,12 @@ namespace VContainer.SourceGenerator
     /// <see cref="System.Collections.Immutable.ImmutableArray{T}"/> does NOT implement structural
     /// equality, which breaks the caching/"generate skip" of <c>IIncrementalGenerator</c>.
     /// </summary>
-    readonly struct EquatableArray<T> : IEquatable<EquatableArray<T>>, IReadOnlyList<T>
+    readonly struct EquatableArray<T>(T[] array) : IEquatable<EquatableArray<T>>, IReadOnlyList<T>
         where T : IEquatable<T>
     {
-        public static readonly EquatableArray<T> Empty = new(Array.Empty<T>());
+        public static readonly EquatableArray<T> Empty = new([]);
 
-        readonly T[]? array;
-
-        public EquatableArray(T[] array) => this.array = array;
+        readonly T[]? array = array;
 
         public int Count => array?.Length ?? 0;
 
@@ -25,8 +23,8 @@ namespace VContainer.SourceGenerator
 
         public bool Equals(EquatableArray<T> other)
         {
-            var self = array ?? Array.Empty<T>();
-            var others = other.array ?? Array.Empty<T>();
+            var self = array ?? [];
+            var others = other.array ?? [];
             if (self.Length != others.Length)
             {
                 return false;
@@ -57,7 +55,7 @@ namespace VContainer.SourceGenerator
             return hash;
         }
 
-        public IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)(array ?? Array.Empty<T>())).GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)(array ?? [])).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
